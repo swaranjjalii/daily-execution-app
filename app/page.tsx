@@ -113,7 +113,7 @@ export default function Home() {
             <h1>Daily Execution</h1>
           </div>
 
-          {/* Achievement Badges in Navbar */}
+          {/* Achievement Badges in Navbar (Desktop) */}
           <div className="achievement-bar">
             <Trophy size={20} color="var(--accent-warning)" />
             <div className="achievement-list">
@@ -152,14 +152,46 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Add Task Button */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="btn btn-primary"
-          >
-            <Plus size={20} />
-            <span className="btn-text">Add Task</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+            {/* Mobile Streak Display */}
+            <div className="mobile-streak" style={{
+              display: 'none', // Hidden by default, shown via CSS
+              alignItems: 'center',
+              gap: '4px',
+              background: 'rgba(245, 158, 11, 0.1)',
+              padding: '6px 10px',
+              borderRadius: '20px',
+              border: '1px solid rgba(245, 158, 11, 0.3)'
+            }}>
+              <div className="fire-icon-small">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#f59e0b"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                </svg>
+              </div>
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#f59e0b' }}>
+                {currentStreak}
+              </span>
+            </div>
+
+            {/* Add Task Button */}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="btn btn-primary"
+            >
+              <Plus size={20} />
+              <span className="btn-text">Add Task</span>
+            </button>
+          </div>
         </div>
       </header>
 
