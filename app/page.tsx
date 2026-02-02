@@ -103,47 +103,20 @@ export default function Home() {
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      position: 'relative',
-      zIndex: 1,
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div className="app-wrapper">
       {/* Navbar with Achievements */}
-      <header style={{
-        padding: 'var(--spacing-md) var(--spacing-lg)',
-        borderBottom: '1px solid var(--border-color)',
-        background: 'rgba(10, 14, 23, 0.95)',
-        backdropFilter: 'blur(10px)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100
-      }}>
-        <div style={{
-          maxWidth: '1600px',
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+      <header className="navbar">
+        <div className="navbar-container">
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+          <div className="navbar-logo">
             <Target size={28} color="var(--accent-primary)" />
-            <h1 style={{ marginBottom: 0, fontSize: '1.5rem' }}>Daily Execution</h1>
+            <h1>Daily Execution</h1>
           </div>
 
           {/* Achievement Badges in Navbar */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--spacing-md)',
-            flex: 1,
-            justifyContent: 'center',
-            maxWidth: '600px'
-          }}>
+          <div className="achievement-bar">
             <Trophy size={20} color="var(--accent-warning)" />
-            <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+            <div className="achievement-list">
               {achievements.map((achievement) => (
                 <div
                   key={achievement.id}
@@ -185,31 +158,15 @@ export default function Home() {
             className="btn btn-primary"
           >
             <Plus size={20} />
-            Add Task
+            <span className="btn-text">Add Task</span>
           </button>
         </div>
       </header>
 
       {/* Main Layout: Sidebar + Content */}
-      <div style={{
-        display: 'flex',
-        flex: 1,
-        maxWidth: '1600px',
-        margin: '0 auto',
-        width: '100%'
-      }}>
+      <div className="app-container">
         {/* Sidebar with Streak */}
-        <aside style={{
-          width: '280px',
-          minWidth: '280px',
-          padding: 'var(--spacing-lg)',
-          borderRight: '1px solid var(--border-color)',
-          background: 'rgba(19, 24, 36, 0.5)',
-          position: 'sticky',
-          top: '70px',
-          height: 'calc(100vh - 70px)',
-          overflowY: 'auto'
-        }}>
+        <aside className="sidebar">
           <StreakDisplay currentStreak={currentStreak} longestStreak={longestStreak} />
 
           {/* Quick Stats */}
@@ -245,11 +202,7 @@ export default function Home() {
         </aside>
 
         {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: 'var(--spacing-xl) var(--spacing-lg)',
-          overflowY: 'auto'
-        }}>
+        <main className="main-content">
           {/* Sheet at the Top */}
           <div style={{ marginBottom: 'var(--spacing-xl)' }}>
             <TaskSheet allTasks={allTasks} onCompleteTask={handleCompleteTask} onAddNotes={handleAddNotes} />
