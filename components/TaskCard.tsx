@@ -1,16 +1,17 @@
 'use client';
 
 import { Task } from '@/lib/types';
-import { Clock, CheckCircle2, Trash2, Circle } from 'lucide-react';
+import { Clock, CheckCircle2, Trash2, Circle, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface TaskCardProps {
     task: Task;
     onComplete: (task: Task) => void;
     onDelete: (taskId: string) => void;
+    onEdit: (task: Task) => void;
 }
 
-export default function TaskCard({ task, onComplete, onDelete }: TaskCardProps) {
+export default function TaskCard({ task, onComplete, onDelete, onEdit }: TaskCardProps) {
     return (
         <div className="glass-card" style={{ marginBottom: 'var(--spacing-md)' }}>
             <div className="flex justify-between items-center">
@@ -89,6 +90,20 @@ export default function TaskCard({ task, onComplete, onDelete }: TaskCardProps) 
                             <Circle size={20} />
                         </button>
                     )}
+
+                    <button
+                        onClick={() => onEdit(task)}
+                        className="btn btn-ghost"
+                        style={{
+                            padding: 'var(--spacing-sm)',
+                            background: 'rgba(99, 102, 241, 0.1)',
+                            border: '1px solid var(--accent-primary)',
+                            color: 'var(--accent-primary)'
+                        }}
+                        title="Edit Task"
+                    >
+                        <Pencil size={20} />
+                    </button>
 
                     <button
                         onClick={() => onDelete(task.id)}

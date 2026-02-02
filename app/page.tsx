@@ -22,6 +22,7 @@ import StreakDisplay from '@/components/StreakDisplay';
 import DailySchedule from '@/components/DailySchedule';
 import TaskSheet from '@/components/TaskSheet';
 import NotesModal from '@/components/NotesModal';
+import EditTaskModal from '@/components/EditTaskModal';
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -32,6 +33,7 @@ export default function Home() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const [editingNotesTask, setEditingNotesTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [mounted, setMounted] = useState(false);
 
   // Load data on mount
@@ -93,6 +95,16 @@ export default function Home() {
       loadData();
       setEditingNotesTask(null);
     }
+  };
+
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleUpdateTask = (taskId: string, updates: { title: string; description: string; scheduledTime: string }) => {
+    updateTask(taskId, updates);
+    loadData();
+    setEditingTask(null);
   };
 
   // Don't render until mounted to avoid hydration issues
@@ -280,6 +292,7 @@ export default function Home() {
                     task={task}
                     onComplete={handleCompleteTask}
                     onDelete={handleDeleteTask}
+                    onEdit={handleEditTask}
                   />
                 ))}
               </div>
@@ -311,6 +324,14 @@ export default function Home() {
           currentNotes={editingNotesTask.notes || ''}
           onSave={handleSaveNotes}
           onClose={() => setEditingNotesTask(null)}
+        />
+      )}
+
+      {editingTask && (
+        <EditTaskModal
+          task={editingTask}
+          onUpdate={handleUpdateTask}
+          onClose={() => setEditingTask(null)}
         />
       )}
     </div>
