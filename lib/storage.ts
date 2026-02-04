@@ -67,6 +67,27 @@ export const checkDailyVisit = (): UserData => {
         }
     }
 
+    // Rollover tasks from the last active day to today
+    const lastVisitTasks = data.tasks.filter(task => task.date === data.lastVisitDate);
+    const todayTasks = data.tasks.filter(task => task.date === today);
+
+    // Only copy if there are tasks to copy and we haven't already populated today 
+    // (though the lastVisitDate check handles the 'already populated' mostly, 
+    // unless user manually added tasks for today before the app loaded, which is impossible with local storage in this flow)
+    if (lastVisitTasks.length > 0 && todayTasks.length === 0) {
+        const newTasks = lastVisitTasks.map((task, index) => ({
+            ...task,
+            id: `task-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+            date: today,
+            completed: false,
+            completionProof: undefined,
+            completedAt: undefined,
+            createdAt: new Date().toISOString()
+        }));
+
+        data.tasks = [...data.tasks, ...newTasks];
+    }
+
     data.lastVisitDate = today;
     saveUserData(data);
     return data;
