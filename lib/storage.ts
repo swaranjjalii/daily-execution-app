@@ -46,49 +46,61 @@ export const checkDailyVisit = (): UserData => {
     const data = getUserData();
     const today = getTodayString();
 
-    if (data.lastVisitDate === today) {
-        return data; // Already visited today
+    // 1. Streak Logic: Only run if it's actually a new day visit
+    if (data.lastVisitDate !== today) {
+        const lastVisit = parseISO(data.lastVisitDate);
+        const todayDate = startOfDay(new Date());
+        const daysDiff = differenceInDays(todayDate, startOfDay(lastVisit));
+
+        // If more than 1 day has passed, check if yesterday's tasks were completed
+        if (daysDiff > 1) {
+            // Missed a day - reset streak
+            data.currentStreak = 0;
+        } else if (daysDiff === 1) {
+            // Check if yesterday's tasks were all completed
+            const yesterdayRecord = data.dailyRecords.find(r => r.date === data.lastVisitDate);
+            if (yesterdayRecord && !yesterdayRecord.allTasksCompleted && yesterdayRecord.totalTasks > 0) {
+                // Had tasks but didn't complete all - reset streak
+                data.currentStreak = 0;
+            }
+        }
+
+        // Update last visit date
+        data.lastVisitDate = today;
     }
 
-    const lastVisit = parseISO(data.lastVisitDate);
-    const todayDate = startOfDay(new Date());
-    const daysDiff = differenceInDays(todayDate, startOfDay(lastVisit));
+    // 2. Task Rollover Logic
+    // Check if we have tasks for today
+    const todayTasks = data.tasks.filter(task => task.date === today);
 
-    // If more than 1 day has passed, check if yesterday's tasks were completed
-    if (daysDiff > 1) {
-        // Missed a day - reset streak
-        data.currentStreak = 0;
-    } else if (daysDiff === 1) {
-        // Check if yesterday's tasks were all completed
-        const yesterdayRecord = data.dailyRecords.find(r => r.date === data.lastVisitDate);
-        if (yesterdayRecord && !yesterdayRecord.allTasksCompleted && yesterdayRecord.totalTasks > 0) {
-            // Had tasks but didn't complete all - reset streak
-            data.currentStreak = 0;
+    // If no tasks for today, try to copy from the most recent previous day with tasks
+    if (todayTasks.length === 0) {
+        // Get all unique dates from tasks, sort descending
+        const taskDates = Array.from(new Set(data.tasks.map(t => t.date)))
+            .filter(d => d < today)
+            .sort((a, b) => b.localeCompare(a)); // Descending order (latest first)
+
+        if (taskDates.length > 0) {
+            const lastActiveDate = taskDates[0];
+            const tasksToCopy = data.tasks.filter(t => t.date === lastActiveDate);
+
+            if (tasksToCopy.length > 0) {
+                const newTasks = tasksToCopy.map((task, index) => ({
+                    ...task,
+                    id: `task-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+                    date: today,
+                    completed: false,
+                    completionProof: undefined,
+                    completedAt: undefined,
+                    createdAt: new Date().toISOString(),
+                    notes: '' // Start with empty notes for the new day
+                }));
+
+                data.tasks = [...data.tasks, ...newTasks];
+            }
         }
     }
 
-    // Rollover tasks from the last active day to today
-    const lastVisitTasks = data.tasks.filter(task => task.date === data.lastVisitDate);
-    const todayTasks = data.tasks.filter(task => task.date === today);
-
-    // Only copy if there are tasks to copy and we haven't already populated today 
-    // (though the lastVisitDate check handles the 'already populated' mostly, 
-    // unless user manually added tasks for today before the app loaded, which is impossible with local storage in this flow)
-    if (lastVisitTasks.length > 0 && todayTasks.length === 0) {
-        const newTasks = lastVisitTasks.map((task, index) => ({
-            ...task,
-            id: `task-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
-            date: today,
-            completed: false,
-            completionProof: undefined,
-            completedAt: undefined,
-            createdAt: new Date().toISOString()
-        }));
-
-        data.tasks = [...data.tasks, ...newTasks];
-    }
-
-    data.lastVisitDate = today;
     saveUserData(data);
     return data;
 };
